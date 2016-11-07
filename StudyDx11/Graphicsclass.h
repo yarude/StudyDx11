@@ -4,12 +4,10 @@
 #ifndef _GRAPHICSCLASS_H_
 #define _GRAPHICSCLASS_H_
 
-
-//////////////
-// INCLUDES //
-//////////////
-#include <windows.h>
-
+///////////////////////
+// MY CLASS INCLUDES //
+///////////////////////
+#include "d3dclass.h"
 
 /////////////
 // GLOBALS //
@@ -38,6 +36,9 @@ private:
 	bool Render();
 
 private:
+
+	// 多出来的指向D3DClass的变量
+	D3DClass* m_Direct3D;
 
 };
 
