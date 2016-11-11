@@ -32,22 +32,22 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	float screenDepth, float screenNear)
 {
 	HRESULT result;
-	IDXGIFactory* factory;
-	IDXGIAdapter* adapter;
-	IDXGIOutput* adapterOutput;
-	unsigned int numModes, i, numerator, denominator;
-	unsigned long long stringLength;
-	DXGI_MODE_DESC* displayModeList;
-	DXGI_ADAPTER_DESC adapterDesc;
+	IDXGIFactory* factory;      // 用以创建接口工厂类，该对象用以枚举出显卡设备
+	IDXGIAdapter* adapter;      // 显卡设备接口类，可以用来枚举出显示设备 (比如显示器)，可以获取显卡的一些信息
+	IDXGIOutput* adapterOutput; // 显示器设备接口类，可以根据给定的rgba格式查询支持的显示模式 (分辨率和刷新率)
+	unsigned int numModes, i, numerator, denominator; // 显示器和显卡支持的显示模式数量，刷新率的分子和分母
+	unsigned long long stringLength;                  // 辅助变量在显卡名称描述转换成字符串时使用
+	DXGI_MODE_DESC* displayModeList;                  // 临时保存显示器支持的模式的数组
+	DXGI_ADAPTER_DESC adapterDesc;                    // 存有显卡描述信息
 	int error;
-	DXGI_SWAP_CHAIN_DESC swapChainDesc;
-	D3D_FEATURE_LEVEL featureLevel;
-	ID3D11Texture2D* backBufferPtr;
-	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-	D3D11_RASTERIZER_DESC rasterDesc;
-	D3D11_VIEWPORT viewport;
+	DXGI_SWAP_CHAIN_DESC swapChainDesc; // 交换链类用于实例化，然后设置，用于创建D3D设备和交换链
+	D3D_FEATURE_LEVEL featureLevel;     // 设置API级别，可以设置成以前的Dx9和Dx12
+	ID3D11Texture2D* backBufferPtr;     // 用于临时存放后背缓冲区，先获取信息然后存在这个对象中，然后根据存下的信息创建渲染对象视图
+	D3D11_TEXTURE2D_DESC depthBufferDesc; // 用于创建深度缓冲区的临时信息类
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc; // 信息类用于设置深度测试和模板测试
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc; // 信息类用于创建深度和模板视图
+	D3D11_RASTERIZER_DESC rasterDesc;                   // 信息类用于控制光栅器状态
+	D3D11_VIEWPORT viewport;    // 信息类用于设置视口空间
 	float fieldOfView, screenAspect;
 
 
@@ -135,7 +135,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 		return false;
 	}
 
-	// 到这里我们已经获取了显卡的信息以及刷新率的分子和分母，一些临时结构体以及一些泳衣获取信息的接口可以释放了
+	// 到这里我们已经获取了显卡的信息以及刷新率的分子和分母，一些临时结构体以及一些用于获取信息的接口可以释放了
 
 	// Release the display mode list.
 	delete[] displayModeList;
@@ -207,7 +207,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	}
 
 	// Set the scan line ordering and scaling to unspecified.
-	// 不明白号线和扫描线有关
+	// 不明白好像和扫描线有关
 	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
@@ -234,6 +234,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 
 	// Get the pointer to the back buffer.
+    // 获取后缓冲区地址
 	result = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
 	if (FAILED(result))
 	{
@@ -241,6 +242,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	}
 
 	// Create the render target view with the back buffer pointer.
+    // 渲染目标视图说明这个backbuffer是供渲染用的，到时要将这个视图绑定到流水线的渲染阶段
 	result = m_device->CreateRenderTargetView(backBufferPtr, NULL, &m_renderTargetView);
 	if (FAILED(result))
 	{
@@ -270,6 +272,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 
 	// Create the texture for the depth buffer using the filled out description.
+    // 创建用于深度模板缓冲的纹理buffer
 	result = m_device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer);
 	if (FAILED(result))
 	{
@@ -278,7 +281,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 
 	// Initialize the description of the stencil state.
-	// 用以控制深度测试和末班测试
+	// 用以创建控制深度测试和模板测试的state
 	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
 
 	// Set up the description of the stencil state.
@@ -313,7 +316,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 1);
 
 	// Initialize the depth stencil view.
-	// 初始化深度和模板视图，该视图用于硬件访问buffer用
+	// 初始化深度和模板视图，每一个buffer资源都要有一个视图表明将该buffer绑定到哪里
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 
 	// Set up the depth stencil view description.
@@ -322,6 +325,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	// Create the depth stencil view.
+    // 创建深度和模板buffer的视图，其实就是将一张分配的指定纹理绑定到深度和模板的用途
 	result = m_device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
 	if (FAILED(result))
 	{
@@ -395,7 +399,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 void D3DClass::Shutdown()
 {
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
-	// 如果在全屏模式下可能会抛出异常
+	// 如果在全屏模式下可能会抛出异常，所以先切换出全屏
 	if (m_swapChain)
 	{
 		m_swapChain->SetFullscreenState(false, NULL);
