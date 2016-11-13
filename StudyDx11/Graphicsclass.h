@@ -8,6 +8,10 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "d3dclass.h"
+#include "CameraClass.h"
+#include "ModelClass.h"
+#include "ColorShaderClass.h"
+
 
 /////////////
 // GLOBALS //
@@ -39,7 +43,10 @@ private:
 
 	// 多出来的指向D3DClass的变量
 	D3DClass* m_Direct3D;
-
+	// 新添加的
+	CameraClass* m_Camera;
+	ModelClass* m_Model;
+	ColorShaderClass* m_ColorShader;
 };
 
 #endif
