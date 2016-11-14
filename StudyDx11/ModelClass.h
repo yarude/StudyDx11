@@ -13,17 +13,24 @@
 using namespace DirectX;
 
 
+///////////////////////
+// MY CLASS INCLUDES //
+///////////////////////
+#include "TextureClass.h"
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: ModelClass
 ////////////////////////////////////////////////////////////////////////////////
 class ModelClass
 {
 private:
-	// 使用的顶点结构体，注意要和之后设置的匹配
+
+	// 新的顶点格式
 	struct VertexType
 	{
 		XMFLOAT3 position;
-		XMFLOAT4 color;
+		XMFLOAT2 texture;
 	};
 
 public:
@@ -31,21 +38,29 @@ public:
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	bool Initialize(ID3D11Device*);
+	bool Initialize(ID3D11Device*, ID3D11DeviceContext*, char*);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
 	int GetIndexCount();
+	// 新方法
+	ID3D11ShaderResourceView* GetTexture();
 
 private:
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();
-	// 将模型提交到显卡为绘制做准备
 	void RenderBuffers(ID3D11DeviceContext*);
+
+	// 新的纹理相关方法
+	bool LoadTexture(ID3D11Device*, ID3D11DeviceContext*, char*);
+	void ReleaseTexture();
 
 private:
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
 	int m_vertexCount, m_indexCount;
+
+	// 纹理
+	TextureClass* m_Texture;
 };
 
 #endif

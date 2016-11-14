@@ -1,12 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Filename: modelclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
-#include "modelclass.h"
+#include "ModelClass.h"
+
 
 ModelClass::ModelClass()
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
+
+	// 新加的
+	m_Texture = 0;
 }
 
 
@@ -19,7 +23,7 @@ ModelClass::~ModelClass()
 {
 }
 
-bool ModelClass::Initialize(ID3D11Device* device)
+bool ModelClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* textureFilename)
 {
 	bool result;
 
@@ -31,18 +35,29 @@ bool ModelClass::Initialize(ID3D11Device* device)
 		return false;
 	}
 
+	// 新加的载入纹理方法
+	// Load the texture for this model.
+	result = LoadTexture(device, deviceContext, textureFilename);
+	if (!result)
+	{
+		return false;
+	}
+
 	return true;
 }
 
+
 void ModelClass::Shutdown()
 {
+	// Release the model texture.
+	ReleaseTexture();
+
 	// Shutdown the vertex and index buffers.
 	ShutdownBuffers();
 
 	return;
 }
 
-// 被GraphicsClass::Render调用，将顶点和索引缓冲提交到图形流水线上，以供shader渲染
 void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 {
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
@@ -51,12 +66,18 @@ void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 	return;
 }
 
+
 int ModelClass::GetIndexCount()
 {
 	return m_indexCount;
 }
 
-// 初始化，将载入模型并创建顶点和索引buffer，这个例子我们自己手工的设置顶点
+// 
+ID3D11ShaderResourceView* ModelClass::GetTexture()
+{
+	return m_Texture->GetTexture();
+}
+
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
 {
 	VertexType* vertices;
@@ -65,7 +86,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 	HRESULT result;
 
-	// 创建两个临时保存顶点和索引的数组
+
 	// Set the number of vertices in the vertex array.
 	m_vertexCount = 3;
 
@@ -88,21 +109,19 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 	// Load the vertex array with data.
 	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	vertices[0].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[0].texture = XMFLOAT2(0.0f, 1.0f);           // 原来的color被替换成了纹理坐标
 
 	vertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.0f);  // Top middle.
-	vertices[1].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[1].texture = XMFLOAT2(0.5f, 0.0f);
 
 	vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	vertices[2].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[2].texture = XMFLOAT2(1.0f, 1.0f);
 
 	// Load the index array with data.
-	// 注意这里是顺时针的
 	indices[0] = 0;  // Bottom left.
 	indices[1] = 1;  // Top middle.
 	indices[2] = 2;  // Bottom right.
 
-					 // 创建顶点和索引buffer
 					 // Set up the description of the static vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_vertexCount;
@@ -143,7 +162,6 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		return false;
 	}
 
-	// 释放顶点和索引的临时数组
 	// Release the arrays now that the vertex and index buffers have been created and loaded.
 	delete[] vertices;
 	vertices = 0;
@@ -153,6 +171,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 	return true;
 }
+
 
 void ModelClass::ShutdownBuffers()
 {
@@ -173,7 +192,7 @@ void ModelClass::ShutdownBuffers()
 	return;
 }
 
-// 激活顶点和索引buffer，设置图元格式 (点，线，三角形，三角形条带等)
+
 void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 {
 	unsigned int stride;
@@ -192,6 +211,43 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	return;
+}
+
+// 在初始化时调用的载入纹理方法，使用了我们创建的纹理类
+bool ModelClass::LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* filename)
+{
+	bool result;
+
+
+	// Create the texture object.
+	m_Texture = new TextureClass;
+	if (!m_Texture)
+	{
+		return false;
+	}
+
+	// Initialize the texture object.
+	result = m_Texture->Initialize(device, deviceContext, filename);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+// 释放纹理
+void ModelClass::ReleaseTexture()
+{
+	// Release the texture object.
+	if (m_Texture)
+	{
+		m_Texture->Shutdown();
+		delete m_Texture;
+		m_Texture = 0;
+	}
 
 	return;
 }

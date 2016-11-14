@@ -1,0 +1,32 @@
+////////////////////////////////////////////////////////////////////////////////
+  // Filename: texture.ps
+  ////////////////////////////////////////////////////////////////////////////////
+
+  /////////////
+  // GLOBALS //
+  /////////////
+  Texture2D shaderTexture;        // 代表了文理资源
+  SamplerState SampleType;        // 纹理采样状态，定义了纹理怎样被采样
+
+  //////////////
+  // TYPEDEFS //
+  //////////////
+  struct PixelInputType
+  {
+      float4 position : SV_POSITION;
+      float2 tex : TEXCOORD0;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // Pixel Shader
+  ////////////////////////////////////////////////////////////////////////////////
+  float4 TexturePixelShader(PixelInputType input) : SV_TARGET
+  {
+      float4 textureColor;
+
+
+      // Sample the pixel color from the texture using the sampler at this texture coordinate location.
+      textureColor = shaderTexture.Sample(SampleType, input.tex);
+
+      return textureColor;
+  }

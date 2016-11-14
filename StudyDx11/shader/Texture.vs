@@ -1,40 +1,38 @@
 ////////////////////////////////////////////////////////////////////////////////
-  // Filename: color.vs
+  // Filename: texture.vs
   ////////////////////////////////////////////////////////////////////////////////
+
 
   /////////////
   // GLOBALS //
   /////////////
-  // 首先定义shader中的全局变量，这些变量将有c++程序来赋值，变量建议统一定义在一个buffer结构里
-  cbuffer MatrixBuffer            // cbuffer结构
+  cbuffer MatrixBuffer
   {
       matrix worldMatrix;
       matrix viewMatrix;
       matrix projectionMatrix;
   };
 
-  // 定义输入输出结构
   //////////////
   // TYPEDEFS //
   //////////////
-  // 该结构需要符合C++中定义的Vertex Buffer中的数据格式
   struct VertexInputType
   {
-       // POSITION为语义，告诉GPU将怎样处理该变量POSITION是给顶点着色器用的
       float4 position : POSITION;
-      float4 color : COLOR;       // 如果需要多个颜色可以使用COLOR0，COLOR1语义
+      float2 tex : TEXCOORD0;
   };
 
   struct PixelInputType
   {
-      float4 position : SV_POSITION; // 输出给pixel shader的
-      float4 color : COLOR;
+      float4 position : SV_POSITION;
+      float2 tex : TEXCOORD0;
   };
+
 
   ////////////////////////////////////////////////////////////////////////////////
   // Vertex Shader
   ////////////////////////////////////////////////////////////////////////////////
-  PixelInputType ColorVertexShader(VertexInputType input)
+  PixelInputType TextureVertexShader(VertexInputType input)
   {
       PixelInputType output;
       
@@ -46,9 +44,9 @@
       output.position = mul(input.position, worldMatrix);
       output.position = mul(output.position, viewMatrix);
       output.position = mul(output.position, projectionMatrix);
-      
-      // Store the input color for the pixel shader to use.
-      output.color = input.color;
-      
+
+        // Store the texture coordinates for the pixel shader.
+      output.tex = input.tex;
+
       return output;
   }

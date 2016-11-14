@@ -33,10 +33,13 @@
     <ClInclude Include="CameraClass.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ColorShaderClass.h">
+    <ClInclude Include="ModelClass.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ModelClass.h">
+    <ClInclude Include="TextureShaderClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureClass.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,18 +62,21 @@
     <ClCompile Include="CameraClass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ColorShaderClass.cpp">
+    <ClCompile Include="ModelCLass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ModelCLass.cpp">
+    <ClCompile Include="TextureShaderClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureClass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\Color.vs">
+    <None Include="shader\Texture.ps">
       <Filter>shader</Filter>
     </None>
-    <None Include="shader\Color.ps">
+    <None Include="shader\Texture.vs">
       <Filter>shader</Filter>
     </None>
   </ItemGroup>
