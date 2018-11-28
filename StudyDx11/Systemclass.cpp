@@ -5,13 +5,13 @@
 
 SystemClass::SystemClass()
 {
-	// Çå¿ÕÖ¸Õë£¬ÒòÎªÖ®ºó»á¸ù¾İÖ¸ÕëÀ´ÅĞ¶ÏÓĞÃ»ÓĞÄÚÈİ
+	// æ¸…ç©ºæŒ‡é’ˆï¼Œå› ä¸ºä¹‹åä¼šæ ¹æ®æŒ‡é’ˆæ¥åˆ¤æ–­æœ‰æ²¡æœ‰å†…å®¹
 	m_Input = 0;
 	m_Graphics = 0;
 }
 
-// ¿ÕµÄ¸´ÖÆ¿½±´ºÍÎö¹¹£¬ÕâÀïÃ»ÓĞÔÚÎö¹¹ÖĞÊÍ·Å×ÊÔ´¶øÔÚshutdownº¯ÊıÖĞÊÍ·Å
-// ÒòÎªwindowsµÄÒ»Ğ©º¯Êı²»»áµ÷ÓÃÀàµÄÎö¹¹º¯Êı£¬±ÈÈçExitThread()
+// ç©ºçš„å¤åˆ¶æ‹·è´å’Œææ„ï¼Œè¿™é‡Œæ²¡æœ‰åœ¨ææ„ä¸­é‡Šæ”¾èµ„æºè€Œåœ¨shutdownå‡½æ•°ä¸­é‡Šæ”¾
+// å› ä¸ºwindowsçš„ä¸€äº›å‡½æ•°ä¸ä¼šè°ƒç”¨ç±»çš„ææ„å‡½æ•°ï¼Œæ¯”å¦‚ExitThread()
 SystemClass::SystemClass(const SystemClass& other)
 {
 }
@@ -20,7 +20,7 @@ SystemClass::SystemClass(const SystemClass& other)
 SystemClass::~SystemClass()
 {
 }
-// ´´½¨´°¿Ú£¬³õÊ¼»¯Input¶ÔÏóºÍÍ¼ĞÎ¶ÔÏó
+// åˆ›å»ºçª—å£ï¼Œåˆå§‹åŒ–Inputå¯¹è±¡å’Œå›¾å½¢å¯¹è±¡
 bool SystemClass::Initialize()
 {
 	int screenWidth, screenHeight;
@@ -60,7 +60,7 @@ bool SystemClass::Initialize()
 
 	return true;
 }
-// ÇåÀí×ÊÔ´
+// æ¸…ç†èµ„æº
 void SystemClass::Shutdown()
 {
 	// Release the graphics object.
@@ -83,7 +83,7 @@ void SystemClass::Shutdown()
 
 	return;
 }
-// Ó¦ÓÃÖ÷Ñ­»·
+// åº”ç”¨ä¸»å¾ªç¯
 void SystemClass::Run()
 {
 	MSG msg;
@@ -100,7 +100,7 @@ void SystemClass::Run()
 		// Handle the windows messages.
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			// ½«ÏûÏ¢´¦Àí²¢·¢ËÍ¸øwinproc
+			// å°†æ¶ˆæ¯å¤„ç†å¹¶å‘é€ç»™winproc
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
@@ -146,7 +146,7 @@ bool SystemClass::Frame()
 	return true;
 }
 
-// ÔÚwinprocÖĞµ÷ÓÃ°ïÆä´¦ÀíÒ»Ğ©ÏµÍ³ÏûÏ¢
+// åœ¨winprocä¸­è°ƒç”¨å¸®å…¶å¤„ç†ä¸€äº›ç³»ç»Ÿæ¶ˆæ¯
 LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
 	switch (umsg)
@@ -174,7 +174,7 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 	}
 	}
 }
-// ´´½¨Ó¦ÓÃ³ÌĞò´°¿Ú
+// åˆ›å»ºåº”ç”¨ç¨‹åºçª—å£
 void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 {
 	WNDCLASSEX wc;
@@ -182,17 +182,17 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	int posX, posY;
 
 
-	// ÎªÆÚÈ«¾Ö±äÁ¿¸³Öµ
+	// ä¸ºæœŸå…¨å±€å˜é‡èµ‹å€¼
 	ApplicationHandle = this;
 
-	// »ñÈ¡Ó¦ÓÃÊµÀı
+	// è·å–åº”ç”¨å®ä¾‹
 	m_hinstance = GetModuleHandle(NULL);
 
 	// Give the application a name.
 	m_applicationName = L"Engine";
 
 	// Setup the windows class with default settings.
-	// ÉèÖÃ´°¿ÚÀà
+	// è®¾ç½®çª—å£ç±»
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc = WndProc;
 	wc.cbClsExtra = 0;
@@ -210,18 +210,18 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	RegisterClassEx(&wc);
 
 	// Determine the resolution of the clients desktop screen.
-	// »ñÈ¡ÏµÍ³µ±Ç°·Ö±æÂÊ
+	// è·å–ç³»ç»Ÿå½“å‰åˆ†è¾¨ç‡
 	screenWidth = GetSystemMetrics(SM_CXSCREEN);
 	screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
-	// ¸ù¾İFULL_SCREEN¾ö¶¨ÊÇ·ñÊ¹ÓÃÈ«ÆÁÄ£Ê½
+	// æ ¹æ®FULL_SCREENå†³å®šæ˜¯å¦ä½¿ç”¨å…¨å±æ¨¡å¼
 	if (FULL_SCREEN)
 	{
 		// If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-		// È«ÆÁµÄ·Ö±æÂÊ
+		// å…¨å±çš„åˆ†è¾¨ç‡
 		dmScreenSettings.dmPelsWidth = (unsigned long)screenWidth;
 		dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
 		dmScreenSettings.dmBitsPerPel = 32;
@@ -240,20 +240,20 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 		screenHeight = 600;
 
 		// Place the window in the middle of the screen.
-		// ´°¿Ú¾ÓÖĞÏÔÊ¾
+		// çª—å£å±…ä¸­æ˜¾ç¤º
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
 		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
 	}
 
 	// Create the window with the screen settings and get the handle to it.
-	// ¸ù¾İÉèÖÃ´´½¨´°¿Ú
+	// æ ¹æ®è®¾ç½®åˆ›å»ºçª—å£
 	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, m_applicationName,
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
 		posX, posY, screenWidth, screenHeight, NULL, NULL, m_hinstance, NULL);
 
 	// Bring the window up on the screen and set it as main focus.
 	ShowWindow(m_hwnd, SW_SHOW);
-	// ÉèÖÃ¸Ã´°¿ÚÏß³Ìµ½Ç°Ì¨²¢¼¤»î
+	// è®¾ç½®è¯¥çª—å£çº¿ç¨‹åˆ°å‰å°å¹¶æ¿€æ´»
 	SetForegroundWindow(m_hwnd);
 	SetFocus(m_hwnd);
 
@@ -262,7 +262,7 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 	return;
 }
-// »¹Ô­´°¿ÚÉèÖÃ£¬²¢Ïú»Ù´´½¨µÄ´°¿Ú
+// è¿˜åŸçª—å£è®¾ç½®ï¼Œå¹¶é”€æ¯åˆ›å»ºçš„çª—å£
 void SystemClass::ShutdownWindows()
 {
 	// Show the mouse cursor.
@@ -288,7 +288,7 @@ void SystemClass::ShutdownWindows()
 	return;
 }
 
-// ÏûÏ¢´¦Àíº¯Êı
+// æ¶ˆæ¯å¤„ç†å‡½æ•°
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
 	switch (umessage)

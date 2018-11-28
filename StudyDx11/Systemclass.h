@@ -7,7 +7,7 @@
 ///////////////////////////////
 // PRE-PROCESSING DIRECTIVES //
 ///////////////////////////////
-// 仅仅使用win32 api不包含mfc的api
+// 浠呬粎浣跨敤win32 api涓嶅寘鍚玬fc鐨刟pi
 #define WIN32_LEAN_AND_MEAN
 
 //////////////
@@ -48,9 +48,9 @@ private:
 	HINSTANCE m_hinstance;
 	HWND m_hwnd;
 
-	// 处理输入
+	// 澶勭悊杈撳叆
 	InputClass* m_Input;
-	// 处理图形
+	// 澶勭悊鍥惧舰
 	GraphicsClass* m_Graphics;
 };
 

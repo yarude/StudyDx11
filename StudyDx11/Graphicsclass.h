@@ -37,7 +37,7 @@ private:
 
 private:
 
-	// ¶à³öÀ´µÄÖ¸ÏòD3DClassµÄ±äÁ¿
+	// å¤šå‡ºæ¥çš„æŒ‡å‘D3DClassçš„å˜é‡
 	D3DClass* m_Direct3D;
 
 };

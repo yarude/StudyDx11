@@ -72,7 +72,7 @@ bool GraphicsClass::Frame()
 bool GraphicsClass::Render()
 {
 	// Clear the buffers to begin the scene.
-	// Çå³ý³É»ÒÉ«
+	// æ¸…é™¤æˆç°è‰²
 	m_Direct3D->BeginScene(0.5f, 0.5f, 0.5f, 1.0f);
 
 
